@@ -1,8 +1,8 @@
-# { WORKSHOP NAME } 
-### Presentation: [{ YOUR PRESENTATION NAME }](workshop/presentation_template.pdf)
+# Scaleable Data Harvesting for AI
+### Presentation: [Scaleable Data Harvesting for AI](workshop/presentation_template.pdf)
 
 ## Workshop description
-Describe why your topic is important and what you want to share with your audience
+Large scale training sets are the foundation for AI modles and their development.
 
 ## Requirements
 * PyLadies Amsterdam uses [uv](https://docs.astral.sh/uv/) for dependency management
