@@ -1,5 +1,5 @@
-# Scaleable Data Harvesting for AI
-### Presentation: [Scaleable Data Harvesting for AI](workshop/presentation_template.pdf)
+# Scalable Data Harvesting for AI
+### Presentation: [Scalable Data Harvesting for AI](workshop/presentation_template.pdf)
 
 ## Workshop description
 Large scale training sets are the foundation for AI modles and their development.
