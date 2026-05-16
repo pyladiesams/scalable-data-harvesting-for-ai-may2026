@@ -1,12 +1,18 @@
 [project]
-name = "workshoptopic-mmmyyyy"
+name = "scalable-data-harvesting-for-ai-may2026"
 version = "0.1.0"
-description = "Add your description here"
+description = "An introduction to scalable, high-throughput webscraping methods for provision of large training data."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = []
 
-[tool.uv]
-dev-dependencies = [
+[tool.uv.workspace]
+members = [
+    "solutions",
+    "workshop",
+]
+
+[dependency-groups]
+dev = [
     "pre-commit>=3.5.0",
 ]
