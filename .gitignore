@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Solutions folder
+solutions/quotescraper/*.html
+solutions/quotescraper/*.json
