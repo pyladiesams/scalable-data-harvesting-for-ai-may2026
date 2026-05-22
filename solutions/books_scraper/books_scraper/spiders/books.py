@@ -1,6 +1,7 @@
 import datetime as dt
 
 import scrapy
+from scrapy.http import Response
 
 from books_scraper.items import Book
 
@@ -8,11 +9,21 @@ from books_scraper.items import Book
 class BooksSpider(scrapy.Spider):
     name = "books"
     allowed_domains = ["books.toscrape.com"]
-    start_urls = [
-        "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
-    ]
+    start_urls = ["https://books.toscrape.com/"]
 
-    def parse(self, response):
+    def parse(self, response: Response):
+        """Extract book links and pagination."""
+        page_links = response.css("h3 a::attr(href)")
+        next_page = response.css(".next").css("a::attr(href)").get()
+
+        for link in page_links:
+            yield response.follow(
+                url=link,
+                callback=self.parse_books,
+            )
+        yield response.follow(next_page, callback=self.parse)
+
+    def parse_books(self, response: Response):
         book = Book()
 
         book["url"] = response.url
