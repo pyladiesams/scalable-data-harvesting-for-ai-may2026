@@ -7,6 +7,7 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import os
 
 BOT_NAME = "books_scraper"
 
@@ -85,3 +86,15 @@ AUTOTHROTTLE_DEBUG = False
 
 # Set settings whose default value is deprecated to a future-proof value
 FEED_EXPORT_ENCODING = "utf-8"
+
+
+### For distributed scraping
+REDIS_URL = os.getenv("REDIS_URL", "http://localhost:6379")
+QUEUE_KEY = "product_worker:start_urls"
+ITEM_PIPELINES = {
+    "books_scraper.pipelines.BooksToJsonFolder": 300,
+}
+# These are required to move the usually in-memory scheduler and duplication
+# filters to redis
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"

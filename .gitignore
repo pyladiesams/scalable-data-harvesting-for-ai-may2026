@@ -1,6 +1,7 @@
 # Data & Log Files
 *.csv
 *.log
+solutions/books/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
