@@ -7,8 +7,6 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-import logging
-import os
 
 BOT_NAME = "books_scraper"
 
@@ -17,9 +15,6 @@ NEWSPIDER_MODULE = "books_scraper.spiders"
 
 ADDONS = {}
 
-LOG_LEVEL = os.getenv("LOG_LEVEL", logging.INFO)
-
-
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "books_scraper (+http://www.yourdomain.com)"
 
@@ -27,9 +22,9 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", logging.INFO)
 ROBOTSTXT_OBEY = True
 
 # Concurrency and throttling settings
-# CONCURRENT_REQUESTS = 16
-CONCURRENT_REQUESTS_PER_DOMAIN = 1
-DOWNLOAD_DELAY = 1
+CONCURRENT_REQUESTS = 124
+CONCURRENT_REQUESTS_PER_DOMAIN = 124
+DOWNLOAD_DELAY = 0
 
 # Disable cookies (enabled by default)
 # COOKIES_ENABLED = False
@@ -69,7 +64,7 @@ ITEM_PIPELINES = {
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
-AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_ENABLED = False
 # The initial download delay
 AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies

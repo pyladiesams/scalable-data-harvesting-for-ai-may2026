@@ -21,7 +21,10 @@ class BooksSpider(scrapy.Spider):
                 url=link,
                 callback=self.parse_books,
             )
-        yield response.follow(next_page, callback=self.parse)
+
+        # Continue if we are not at the end
+        if next_page:
+            yield response.follow(next_page, callback=self.parse)
 
     def parse_books(self, response: Response):
         book = Book()
