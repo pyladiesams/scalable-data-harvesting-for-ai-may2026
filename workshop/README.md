@@ -140,7 +140,7 @@ def parse(self, response: Response):
 
     ... # Follow the next page as before.
 ```
-6. Before running your distributed scraping job, you need some way of preventing multiple worker psiders overriding each other's output. The simplest option is to run the separate worker spider's with dedicated output file names, e.g. `scrapy crawl worker -O worker_1.csv & scrapy crawl worker -O worker_2.csv & ...`. The more advanced method is create a pipeline that writes incrementally to a shared output location, e.g. JSON files stored in a folder, as deomstrated [here](../solutions/books_scraper/books_scraper/pipelines.py).
+6. Before running your distributed scraping job, you need some way of preventing multiple worker psiders overriding each other's output. The simplest option is to run the separate worker spider's with dedicated output file names, e.g. `scrapy crawl worker -O worker_1.csv & scrapy crawl worker -O worker_2.csv & ...`. The more advanced method is create a pipeline that writes incrementally to a shared output location, e.g. JSON files stored in a folder, as demonstrated [here](../solutions/books_scraper/books_scraper/pipelines.py#L40).
 7. For distributed scrapin, scrapy's internal scheduler and duplication filter need to run on redis as well, instead of in-memory. To do so, add these lines to your `settings.py`:
 ```python
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"

@@ -10,6 +10,15 @@ from books_scraper.settings import QUEUE_KEY
 class WorkerSpider(RedisSpider):
     name = "worker"
     redis_key = QUEUE_KEY
+    custom_settings = {
+        "ITEM_PIPELINES": {
+            "books_scraper.pipelines.BooksToJsonFolder": 300,
+        },
+        # These are required to move the usually in-memory scheduler and duplication
+        # filters to redis
+        "SCHEDULER": "scrapy_redis.scheduler.Scheduler",
+        "DUPEFILTER_CLASS": "scrapy_redis.dupefilter.RFPDupeFilter",
+    }
 
     max_idle_time = 2
 
