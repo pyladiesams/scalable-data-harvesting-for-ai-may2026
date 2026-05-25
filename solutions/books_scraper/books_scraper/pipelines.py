@@ -25,14 +25,14 @@ class DateTimeEncoder(json.JSONEncoder):
 
 
 class BooksToCsv:
-    def open_spider(self):
+    def open_spider(self, spider):
         self.rows = []
 
-    def process_item(self, item: Item):
+    def process_item(self, item: Item, spider):
         self.rows.append(ItemAdapter(item).asdict())
         return item
 
-    def close_spider(self):
+    def close_spider(self, spider):
         df = pd.DataFrame(self.rows)
         df.to_csv("books.csv", index=False)
 
@@ -40,10 +40,10 @@ class BooksToCsv:
 class BooksToJsonFolder:
     FOLDER = pathlib.Path("./books").absolute()
 
-    def open_spider(self):
+    def open_spider(self, spider):
         self.FOLDER.mkdir(exist_ok=True)
 
-    def process_item(self, item: Book):
+    def process_item(self, item: Book, spider):
         with self.FOLDER.joinpath(item["upc"] + ".json").open(
             "w", encoding="utf-8"
         ) as f:

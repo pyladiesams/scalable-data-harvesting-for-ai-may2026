@@ -13,7 +13,7 @@ services:
 
   pagination:
     build: .
-    command: uv run scrapy crawl pagination_spider
+    command: uv run scrapy crawl pagination_spider -L INFO
     depends_on:
       redis:
         condition: service_healthy
@@ -23,7 +23,7 @@ services:
 
   worker:
     build: .
-    command: uv run scrapy crawl worker
+    command: uv run scrapy crawl worker -L INFO
     depends_on:
       redis:
         condition: service_healthy
