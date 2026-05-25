@@ -2,6 +2,7 @@
 *.csv
 *.log
 solutions/books/*
+solutions/books_scraper/books/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

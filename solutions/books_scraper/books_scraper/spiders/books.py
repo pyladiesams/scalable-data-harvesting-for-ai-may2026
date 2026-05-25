@@ -76,4 +76,4 @@ class BooksSpider(scrapy.Spider):
         book["upc"] = response.css("td::text")[0].get()
         book["availability"] = response.css("td::text")[-2].get()
 
-        return book
+        yield book

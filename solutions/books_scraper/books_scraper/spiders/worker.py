@@ -11,7 +11,7 @@ class WorkerSpider(RedisSpider):
     name = "worker"
     redis_key = QUEUE_KEY
 
-    max_idle_time = 30
+    max_idle_time = 2
 
     def parse(self, response: Response):
         book = Book()

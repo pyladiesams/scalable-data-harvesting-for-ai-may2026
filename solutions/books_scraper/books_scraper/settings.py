@@ -89,7 +89,7 @@ FEED_EXPORT_ENCODING = "utf-8"
 
 
 ### For distributed scraping
-REDIS_URL = os.getenv("REDIS_URL", "http://localhost:6379")
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 QUEUE_KEY = "product_worker:start_urls"
 
 # These elements can be un-commented specifically for distributed scraping
