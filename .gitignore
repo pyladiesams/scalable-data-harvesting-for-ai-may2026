@@ -141,3 +141,4 @@ __pycache__/
    *.pyc
    *.html
    quotes_js.json*.code-workspace
+*.code-workspace
