@@ -6,7 +6,46 @@
 
 # useful for handling different item types with a single interface
 
+import datetime as dt
+import json
+import pathlib
 
-class BooksScraperPipeline:
-    def process_item(self, item, spider):
+import pandas as pd
+from itemadapter import ItemAdapter
+from scrapy import Item
+
+from books_scraper.items import Book
+
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, dt.datetime):
+            return o.isoformat()
+        return super().default(o)
+
+
+class BooksToCsv:
+    def open_spider(self, spider):
+        self.rows = []
+
+    def process_item(self, item: Item, spider):
+        self.rows.append(ItemAdapter(item).asdict())
+        return item
+
+    def close_spider(self, spider):
+        df = pd.DataFrame(self.rows)
+        df.to_csv("books.csv", index=False)
+
+
+class BooksToJsonFolder:
+    FOLDER = pathlib.Path("./books").absolute()
+
+    def open_spider(self, spider):
+        self.FOLDER.mkdir(exist_ok=True)
+
+    def process_item(self, item: Book, spider):
+        with self.FOLDER.joinpath(item["upc"] + ".json").open(
+            "w", encoding="utf-8"
+        ) as f:
+            json.dump(ItemAdapter(item).asdict(), f, cls=DateTimeEncoder)
         return item

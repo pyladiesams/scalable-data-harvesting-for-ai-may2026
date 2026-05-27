@@ -1,0 +1,41 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  pagination:
+    build: .
+    command: uv run scrapy crawl pagination_spider -L INFO
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_URL: redis://redis:6379
+    restart: "no"
+
+  worker:
+    build: .
+    command: uv run scrapy crawl worker -L INFO
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_URL: redis://redis:6379
+    restart: on-failure
+    volumes:
+      - ./books:/app/books_scraper/books:z
+    deploy:
+      replicas: 1
+    
+
+volumes:
+  redis_data:
+  

@@ -1,45 +1,28 @@
 import datetime as dt
 
-import scrapy
 from scrapy.http import Response
+from scrapy_redis.spiders import RedisSpider
 
 from books_scraper.items import Book
+from books_scraper.settings import QUEUE_KEY
 
 
-class BooksSpider(scrapy.Spider):
-    name = "books"
-    allowed_domains = ["books.toscrape.com"]
-    start_urls = ["https://books.toscrape.com/"]
+class WorkerSpider(RedisSpider):
+    name = "worker"
+    redis_key = QUEUE_KEY
+    custom_settings = {
+        "ITEM_PIPELINES": {
+            "books_scraper.pipelines.BooksToJsonFolder": 300,
+        },
+        # These are required to move the usually in-memory scheduler and duplication
+        # filters to redis
+        "SCHEDULER": "scrapy_redis.scheduler.Scheduler",
+        "DUPEFILTER_CLASS": "scrapy_redis.dupefilter.RFPDupeFilter",
+    }
+
+    max_idle_time = 2
 
     def parse(self, response: Response):
-        """Extract book links and pagination."""
-        # We extract all the hyperlinks from anchors within h3 headings.
-        # Using the browser or scrapy's webview, we can identify them as
-        # the elements containing the product links.
-        page_links = response.css("h3").css("a::attr(href)")
-
-        # Conveniently, there exists a 'next' CSS class from which we can
-        # retrieve the anchor and the associated link to the next page
-        next_page = response.css(".next").css("a::attr(href)").get()
-
-        for link in page_links:
-            # For each link in the link queue we 'follow' the href in the
-            # context of the current response. The response for this request is
-            # then passed again to self.parse.
-            # Note, that relative hrefs are OK here, because scrapy will
-            # resolve them using the current response as the context in the same
-            # way as a browser would.
-            yield response.follow(
-                url=link,
-                callback=self.parse_books,
-            )
-
-        # Continue if we are not at the end
-        # If no additional page was found, there is nothing to do anymore
-        if next_page:
-            yield response.follow(next_page, callback=self.parse)
-
-    def parse_books(self, response: Response):
         book = Book()
 
         # URL and datetime are just metadata
