@@ -133,3 +133,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+__pycache__/
+   *.pyc
+   *.html
+   quotes_js.json*.code-workspace
