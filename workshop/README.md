@@ -108,7 +108,60 @@ def parse_book(self, response: Respone):
 >Tip: The `DOWNLOAD_DELAY` settings is very useful if you want to adhere to specific API rate limit, but for typical webscraping autothrottling is usually sufficient and more useful.
 
 ## Exercise 3a - Parsing JS and working with a Headless Browser
-TODO
+
+Many modern websites load their content via JavaScript after the initial page response. A regular Scrapy request only sees the unrendered HTML, so the data you want may not be there yet. In this exercise we will see this problem first-hand, then solve it with a headless browser using [Playwright](https://playwright.dev/python/) via `scrapy-playwright`.
+
+> Note: `books.toscrape.com` is fully static, so for this exercise we use [quotes.toscrape.com](https://quotes.toscrape.com/), which offers a JS-rendered version at `/js/`.
+
+1. Create a spider that saves the raw HTML of a few pages so you can inspect what Scrapy actually receives. Include both a static page (e.g. `/page/1/`) and the JS page (`/js/`). You can dump a response to disk inside your `parse` method:
+```python
+def parse(self, response):
+    page = ...
+    Path(f"quotes-{page}.html").write_bytes(response.body)
+```
+
+2. Run your spider and open the saved files in your browser. The static page renders fine, but the JS page looks broken.
+> The page is not empty: it returns full HTML with `<head>`, `<body>` and `<script>` tags. But the quotes are not in it as elements yet, they are tucked inside a `<script>` tag as raw data, waiting for JavaScript to render them. Scrapy does not run that JavaScript, so a selector like `response.css("div.quote")` returns an empty list on `/js/`.
+
+3. Add `scrapy-playwright` to your environment and install the browser binaries:
+```bash
+uv add scrapy-playwright
+playwright install chromium
+```
+
+4. Enable the Playwright download handler in your project's `settings.py`:
+```python
+DOWNLOAD_HANDLERS = {
+    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+}
+TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
+```
+> Tip: `TWISTED_REACTOR` is required because Playwright relies on asyncio. Without it, Scrapy falls back to its default reactor and Playwright will not work.
+
+5. In your request, tell Scrapy to route it through Playwright by setting the `playwright` meta flag. This is the one line that makes the difference:
+```python
+yield scrapy.Request(url=..., callback=self.parse, meta={"playwright": True})
+```
+
+6. Run your spider again against the JS page. Your selectors should now find the quotes, because Playwright rendered the JavaScript before Scrapy parsed the page.
+```bash
+scrapy crawl NAME -O quotes.json
+```
+If you get stuck, check out the [solutions](../solutions/README.md)!
+
+7. Bonus: Looking human and avoiding bot detection
+
+A headless browser alone is not always enough, since many sites detect bot-like patterns. Common tactics include randomising the user agent, adding realistic delays via `AUTOTHROTTLE_ENABLED`, and randomising cursor movements through Playwright's page methods.
+> Tip: [Scrapling](https://github.com/D4Vinci/Scrapling) is an alternative library with stealth features built in, designed to handle bot detection out of the box. We will look at it briefly in the slides.
+
+8. Bonus: Scraping behind a login
+
+If the data you need is gated behind authentication, you have a few options:
+- Cookies are enabled by default in Scrapy and will persist across requests.
+- Auth tokens can be added manually to your request headers.
+- Use Playwright to click through the login form when neither of the above works.
+> Always check the site's terms of service before scraping behind a login.
 
 ## Exercise 3b - Distributed Scraping
 Distributed scraping is where scrapy really shines. Properly set up, the only limits to your scraping is how much hardware you can afford!
